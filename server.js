@@ -41,6 +41,18 @@ app.post('/api/notes', async(req, res) => {
     res.json(notes);
 });
 
+app.delete('/api/notes/:id', async(req, res) =>{
+    console.log(req.params.id);
+    let notes = await readFile('./db/db.json', 'utf8');
+    notes = JSON.parse(notes);
+
+    const filteredNotes = notes.filter((note) => note.id !== req.params.id);
+    console.log(filteredNotes);
+
+    await writeFile('./db/db.json', JSON.stringify(filteredNotes));
+    res.json(filteredNotes);
+})
+
 app.get('/', (req, res) =>
 res.sendFile(path.join(__dirname, '/public/index.html'))
 );
