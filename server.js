@@ -1,3 +1,9 @@
+const fs = require('fs');
+const util = require ('util');
+
+const readFile = util.promisify(fs.readFile);
+const writeFile = util.promisify(fs.writeFile);
+
 const express = require('express');
 const path = require('path')
 
@@ -12,10 +18,11 @@ app.use(express.static('public'));
 
 // GET Request for notes
 
-app.get('/api/notes', (req, res) => {
-    res.json(`${req.method} request recieved to get notes`);
-    
-    console.info(`${req.method} request recieved to get notes`);
+app.get('/api/notes', async(req, res) => {
+    let notes = await readFile('./db/db.json', 'utf8');
+    notes = JSON.parse(notes);
+    console.log(notes);
+    res.json(notes);
 });
 
 // POST Request for notes 
