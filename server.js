@@ -4,6 +4,8 @@ const util = require ('util');
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 
+const { v4: uuidv4 } = require('uuid');
+
 const express = require('express');
 const path = require('path')
 
@@ -27,10 +29,16 @@ app.get('/api/notes', async(req, res) => {
 
 // POST Request for notes 
 
-app.post('/api/notes', (req, res) => {
-    res.json(`${req.method} request recieved to add a note`);
-    
-    console.info(`${req.method} request recieved to add a note`);
+app.post('/api/notes', async(req, res) => {
+    let notes = await readFile('./db/db.json', 'utf8');
+    notes = JSON.parse(notes);
+    req.body.id = uuidv4();
+    notes.push(req.body);
+    console.log(req.body);
+
+    await writeFile('./db/db.json', JSON.stringify(notes));
+
+    res.json(notes);
 });
 
 app.get('/', (req, res) =>
